@@ -20,8 +20,5 @@ jobs:
         repository: yurii-hunter/upsale/upsale
         tag_with_ref: true
         add_git_labels: true
-  deploy:
-    runs-on: self-hosted
-    steps:
     - name: docker-compose up
       run: docker-compose up -d
