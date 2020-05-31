@@ -14,4 +14,4 @@ jobs:
     steps:
     - name: Build Docker Image
       run: |
-        docker build . -t "upsale"
+        docker build ..\ -t "upsale"
