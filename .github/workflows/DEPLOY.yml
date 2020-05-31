@@ -13,8 +13,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
+    - name: Docker Login
+      uses: azure/docker-login@v1
+      with:
+        login-server: docker.pkg.github.com
+        username: yurii.myslyvets@gmail.com
+        password: ${{ secrets.GITHUB_TOKEN }}
     - name: Start App
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} | docker login https://docker.pkg.github.com -u yurii.myslyvets@gmail.com --password-stdin
         docker-compose up -d
+        docker-compose down
