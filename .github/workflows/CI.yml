@@ -1,4 +1,4 @@
-name: BUILD
+name: CI
 
 on:
   push:
@@ -8,9 +8,7 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v2
     - uses: docker/build-push-action@v1
@@ -21,5 +19,9 @@ jobs:
         registry: docker.pkg.github.com
         repository: yurii-hunter/upsale/upsale
         tag_with_ref: true
-        tag_with_sha: true
         add_git_labels: true
+  deploy:
+    runs-on: self-hosted
+    steps:
+    - name: docker-compose up
+      run: docker-compose up -d
