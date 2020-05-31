@@ -22,4 +22,4 @@ jobs:
     - name: Start App
       run: |
         docker-compose up -d
-        docker-compose down
+        docker-compose down 
