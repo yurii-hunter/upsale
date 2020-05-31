@@ -1,0 +1,24 @@
+version: '3.5'
+
+services: 
+    bot-client:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        hostname: bot-client
+        container_name: bot-client
+        volumes:
+            - .:/usr/src/app
+        command: python manage.py startbot
+        
+    admin:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: admin
+        hostname: admin
+        volumes:
+            - .:/usr/src/app
+        ports:
+            - 8000:8000
+        command: python manage.py runserver 0.0.0.0:8000
