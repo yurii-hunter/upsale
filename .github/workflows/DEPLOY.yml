@@ -16,5 +16,5 @@ jobs:
 
     - name: Start App
       run: |
-        ${{ secrets.GITHUB_TOKEN }} | docker login https://docker.pkg.github.com -u yurii.myslyvets@gmail.com --password-stdin
-        docker-compose up -d
+        echo ${{ secrets.GITHUB_TOKEN }}
+
