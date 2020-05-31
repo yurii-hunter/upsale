@@ -19,6 +19,5 @@ jobs:
         username: _json_key
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: docker.pkg.github.com
-        repository: yurii-hunter/upsale
+        repository: yurii-hunter/upsale/upsale
         tag_with_ref: true
-        tags: upsale
