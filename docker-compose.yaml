@@ -2,7 +2,7 @@ version: '3.5'
 
 services: 
     bot-client:
-        image: docker pull docker.pkg.github.com/yurii-hunter/upsale/upsale:latest
+        image: docker.pkg.github.com/yurii-hunter/upsale/upsale:latest
         container_name: bot-client
         hostname: bot-client
         volumes:
@@ -10,7 +10,7 @@ services:
         command: python manage.py startbot
         
     admin:
-        image: docker pull docker.pkg.github.com/yurii-hunter/upsale/upsale:latest
+        image: docker.pkg.github.com/yurii-hunter/upsale/upsale:latest
         container_name: admin
         hostname: admin
         volumes:
