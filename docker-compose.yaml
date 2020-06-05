@@ -4,6 +4,7 @@ services:
     migration:
         image: docker.pkg.github.com/yurii-hunter/upsale/upsale:latest
         container_name: migration
+        hostname: migration
         volumes:
             - ~/db:/usr/src/app/db
         command: python manage.py migrate
