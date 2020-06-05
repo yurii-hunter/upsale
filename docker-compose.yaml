@@ -5,7 +5,7 @@ services:
         image: docker.pkg.github.com/yurii-hunter/upsale/upsale:latest
         container_name: migration
         volumes:
-            - .:/usr/src/app
+            - ~/db:/usr/src/app
         command: python manage.py migrate
 
     bot-client:
@@ -13,7 +13,7 @@ services:
         container_name: bot-client
         hostname: bot-client
         volumes:
-            - .:/usr/src/app
+            - ~/db:/usr/src/app
         command: python manage.py startbot
         depends_on: 
             - migration
@@ -23,7 +23,7 @@ services:
         container_name: admin
         hostname: admin
         volumes:
-            - .:/usr/src/app
+            - ~/db:/usr/src/app
         ports:
             - 8000:80
         command: python manage.py runserver 0.0.0.0:8000
