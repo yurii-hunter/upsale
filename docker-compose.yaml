@@ -15,7 +15,8 @@ services:
         volumes:
             - .:/usr/src/app
         command: python manage.py startbot
-        depends_on: migration
+        depends_on: 
+            - migration
         
     admin:
         image: docker.pkg.github.com/yurii-hunter/upsale/upsale:latest
@@ -26,4 +27,5 @@ services:
         ports:
             - 8000:8000
         command: python manage.py runserver 0.0.0.0:8000
-        depends_on: migration
+        depends_on:
+            - migration
