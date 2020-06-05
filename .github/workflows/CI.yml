@@ -20,5 +20,9 @@ jobs:
         repository: yurii-hunter/upsale/upsale
         tag_with_ref: true
         add_git_labels: true
-    - name: docker-compose up
-      run: docker-compose up -d
+    - name: stop application
+      run: docker-compose down
+    - name: migrate database
+      run: docker-compose up migration
+    - name: start application
+      run: docker-compose up -d admin bot-client
