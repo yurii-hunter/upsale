@@ -6,6 +6,7 @@ services:
         container_name: migration
         volumes:
             - ~/db:/usr/src/app
+        working_dir: /usr/src/app
         command: python manage.py migrate
 
     bot-client:
@@ -14,6 +15,7 @@ services:
         hostname: bot-client
         volumes:
             - ~/db:/usr/src/app
+        working_dir: /usr/src/app
         command: python manage.py startbot
         depends_on: 
             - migration
@@ -24,6 +26,7 @@ services:
         hostname: admin
         volumes:
             - ~/db:/usr/src/app
+        working_dir: /usr/src/app
         ports:
             - 8000:80
         command: python manage.py runserver 0.0.0.0:8000
