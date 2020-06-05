@@ -10,6 +10,8 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
+    - name: stop application
+      run: docker-compose down
     - uses: actions/checkout@v2
     - uses: docker/build-push-action@v1
       with:
@@ -20,8 +22,6 @@ jobs:
         repository: yurii-hunter/upsale/upsale
         tag_with_ref: true
         add_git_labels: true
-    - name: stop application
-      run: docker-compose down
     - name: migrate database
       run: docker-compose up migration
     - name: start application
