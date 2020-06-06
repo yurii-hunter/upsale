@@ -85,7 +85,7 @@ DATABASES = {
 # Telegram bot settings
 BOTS = {
     'client':{
-        'API_TOKEN': '1125748794:AAG0bkzTVx6cZNNgR3smRLqNMlyvVUZgHBM'
+        'API_TOKEN': os.getenv('BOT_API_TOKEN')
     }
 }
 
