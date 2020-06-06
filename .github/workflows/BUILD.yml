@@ -18,6 +18,6 @@ jobs:
         password: ${{ secrets.PACKAGE_REGISTRY_TOKEN }}
         registry: docker.pkg.github.com
         repository: yurii-hunter/upsale/upsale
-        tag_with_ref: true
-        add_git_labels: true
+        tag_with_ref: false
+        add_git_labels: false
         tag_with_sha: true
