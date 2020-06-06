@@ -10,13 +10,11 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-    - uses: docker/build-push-action@v1
+    - uses: azure/docker-login@v1
       with:
-        push: false
+        login-server: docker.pkg.github.com
         username: ${ GITHUB_ACTOR }
         password: ${{ secrets.PACKAGE_REGISTRY_TOKEN }}
-        registry: docker.pkg.github.com
-        repository: yurii-hunter/upsale/upsale
     - name: stop application
       run: docker-compose down
     - name: migrate database
