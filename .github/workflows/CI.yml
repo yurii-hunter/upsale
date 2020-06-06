@@ -14,8 +14,8 @@ jobs:
     - uses: docker/build-push-action@v1
       with:
         push: true
-        username: _json_key
-        password: ${{ secrets.GITHUB_TOKEN }}
+        username: ${ GITHUB_ACTOR }
+        password: ${{ secrets.PACKAGE_REGISTRY_TOKEN }}
         registry: docker.pkg.github.com
         repository: yurii-hunter/upsale/upsale
         tag_with_ref: true
