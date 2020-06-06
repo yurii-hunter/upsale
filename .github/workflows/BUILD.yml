@@ -20,4 +20,4 @@ jobs:
         repository: yurii-hunter/upsale/upsale
         tag_with_ref: true
         add_git_labels: true
-        tag_with_sha: true
+        tag_with_sha: false
