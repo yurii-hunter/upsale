@@ -11,8 +11,6 @@ jobs:
       BOT_API_TOKEN: ${{ secrets.BOT_API_TOKEN_CHERRY }}
 
     steps:
-    - name: info
-      run: echo "${{ github.event.registry_package.registry.url }}"
     - uses: actions/checkout@v2
     - uses: azure/docker-login@v1
       with:
