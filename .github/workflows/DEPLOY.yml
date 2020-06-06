@@ -1,10 +1,6 @@
 name: DEPLOY
 
-on:
-  registry_package:
-    types: 
-      - published
-      - updated
+on: registry_package
 
 jobs:
   deploy:
