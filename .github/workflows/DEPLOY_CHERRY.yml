@@ -7,7 +7,6 @@ jobs:
     runs-on: 
       - self-hosted
       - cherry
-      
     env:
       BOT_API_TOKEN: ${{ secrets.BOT_API_TOKEN_CHERRY }}
 
@@ -19,7 +18,7 @@ jobs:
         username: ${ GITHUB_ACTOR }
         password: ${{ secrets.PACKAGE_REGISTRY_TOKEN }}
     - name: stop application
-      run: docker-compose down
+      run: docker-compose rm -s -v -f
     - name: migrate database
       run: docker-compose up migration
     - name: start application
