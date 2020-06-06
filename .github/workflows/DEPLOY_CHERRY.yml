@@ -1,0 +1,25 @@
+name: DEPLOY_CHERRY
+
+on: registry_package
+
+jobs:
+  deploy:
+    runs-on: 
+      - self-hosted
+      - cherry
+    
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/build-push-action@v1
+      with:
+        push: false
+        username: ${ GITHUB_ACTOR }
+        password: ${{ secrets.PACKAGE_REGISTRY_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: yurii-hunter/upsale/upsale
+    - name: stop application
+      run: docker-compose down
+    - name: migrate database
+      run: docker-compose up migration
+    - name: start application
+      run: docker-compose up -d admin bot-client
