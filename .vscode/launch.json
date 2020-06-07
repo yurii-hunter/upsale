@@ -10,7 +10,8 @@
             "request": "launch",
             "program": "${workspaceFolder}\\manage.py",
             "env": {
-                "BOT_API_TOKEN":"1125748794:AAG0bkzTVx6cZNNgR3smRLqNMlyvVUZgHBM"
+                "BOT_API_TOKEN":"1125748794:AAG0bkzTVx6cZNNgR3smRLqNMlyvVUZgHBM",
+                "DEBUG": "true"
             },
             "args": [
                 "runserver",
