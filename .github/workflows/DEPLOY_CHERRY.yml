@@ -19,7 +19,7 @@ jobs:
         password: ${{ secrets.PACKAGE_REGISTRY_TOKEN }}
     - name: stop application
       run: docker-compose down
-    - name: pull newer images
+    - name: pull images
       run: docker-compose pull
     - name: migrate database
       run: docker-compose up migration
