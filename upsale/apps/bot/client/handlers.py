@@ -148,12 +148,12 @@ def confirm_order(update: Update, context: CallbackContext):
 
 
 def save_address(update: Update, context: CallbackContext):
-    orders = models.Order.objects.filter(
+    order = models.Order.objects.filter(
         Q(buyer=update.effective_user.id),
-        Q(city__isnull=True) | Q(branch_number__isnull=True))
-    if not orders:
+        Q(city__isnull=True) | Q(branch_number__isnull=True)
+    ).first()
+    if not order:
         return
-    order = orders[0]
     if not order.city:
         order.city = update.message.text
         order.save()

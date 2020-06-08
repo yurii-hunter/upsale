@@ -134,7 +134,7 @@ def get_contact_view():
     reply_markup = ReplyKeyboardMarkup.from_button(button, resize_keyboard=True)
     return {
         'reply_markup': reply_markup,
-        'text': 'Ваш номер телефона нужен, чтобы мы могли отправить посылку новой почтой'}
+        'text': 'Для авторизации в боте отправьте номер телефона'}
 
 def get_city_view():
     """Get delivery city"""
