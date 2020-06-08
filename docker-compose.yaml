@@ -7,7 +7,9 @@ services:
         hostname: migration
         volumes:
             - ~/db:/usr/src/app/db
-        command: python manage.py migrate && python manage.py createadmin --username=${ADMIN_NAME} --email=${ADMIN_EMAIL} --password=${ADMIN_PASS}
+        command: >
+            bash -c "python manage.py migrate 
+            && python manage.py createadmin --username=${ADMIN_NAME} --email=${ADMIN_EMAIL} --password=${ADMIN_PASS}"
 
     bot-client:
         image: docker.pkg.github.com/yurii-hunter/upsale/upsale
