@@ -1,6 +1,13 @@
+"""
+List of models that are used for telegram bot and admin panel
+"""
+from functools import reduce
 from django.db import models
 
+
 class Buyer(models.Model):
+    """Describes a user that uses bot"""
+
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     full_name = models.CharField(max_length=200)
@@ -16,12 +23,14 @@ class Buyer(models.Model):
 
 
 class Product(models.Model):
+    """Describes product that could be added to the shop"""
+
     name = models.CharField(max_length=500)
     description = models.TextField()
     image = models.URLField(max_length=500)
 
     def __min_price(self):
-        return self.pack_set.order_by('price')[0].price
+        return self.stockkeepingunit_set.order_by('price')[0].price
 
     def short_caption(self):
         return f'☕️ {self.name}\n💵 Цена: {self.__min_price()}'
@@ -34,70 +43,69 @@ class Product(models.Model):
 
 
 class Pack(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    """Describes pack that could be used for a product"""
+
     unit = models.CharField(max_length=5)
     size = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.size} {self.unit}'
+
+
+class StockKeepingUnit(models.Model):
+    """Describes unique item in the shop"""
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    pack = models.ForeignKey(Pack, on_delete=models.CASCADE)
     price = models.FloatField()
 
     def __str__(self):
-        return f'{self.product.name} {self.size} {self.unit}'
+        return f'{self.product} {self.pack} - {self.price} грн'
 
 
 class Cart(models.Model):
-    user = models.OneToOneField(Buyer, on_delete=models.CASCADE, primary_key=True)
+    """Describes cart that is used by Bayer for keeping stock units"""
+
+    buyer = models.OneToOneField(Buyer, on_delete=models.CASCADE, primary_key=True)
+    items = models.ManyToManyField(StockKeepingUnit, through='CartItem')
     total_message_id = models.BigIntegerField(default=0)
 
     def __str__(self):
-        return f'{self.user.full_name}'
+        return f'{self.buyer.full_name}'
 
-    def contains(self, pack: Pack) -> bool:
+    def contains(self, sku: StockKeepingUnit) -> bool:
         """Returns True if cart already contains pack"""
-        return bool(self.cartitem_set.all().filter(pack=pack.id))
+        return self.items.filter(id=sku.id).exists()
 
     def is_empty(self):
         """Returns True if no item present in the cart"""
-        return not self.cartitem_set.all()
+        return not self.items.exists()
 
     def get_total_price(self):
         """Return the sum of prices of all items in the cart"""
-        price = 0
-        for item in self.cartitem_set.all():
-            price = price + (item.pack.price * item.count)
-        return price
+        return reduce(lambda price, item: price + item.price, self.items.all(), 0)
 
-    def add_pack(self, pack: Pack):
+    def add_sku(self, sku: StockKeepingUnit):
         """Creates CartItem with passed pack"""
-        self.cartitem_set.create(
-            pack=pack,
-            count=1
-        )
+        CartItem(cart=self, sku=sku).save()
 
-    def remove_pack(self, pack: Pack):
+    def clear_sku(self, sku: StockKeepingUnit):
         """Removes pack from the cart"""
-        cart_item = self.cartitem_set.get(pack=pack)
-        cart_item.delete()
+        CartItem.objects.filter(sku=sku).delete()
 
-    def increase_pack_count(self, pack: Pack):
-        """Increase count for specific pack"""
-        cart_item = self.cartitem_set.get(pack=pack)
-        # the maximum pack count is 10
-        cart_item.count = min(cart_item.count + 1, 10)
-        cart_item.save()
-
-    def decrease_pack_count(self, pack: Pack):
+    def remove_sku(self, sku: StockKeepingUnit):
         """Decrease count for specific pack"""
-        cart_item = self.cartitem_set.get(pack=pack)
-        # the minimum count is 1
-        cart_item.count = max(cart_item.count - 1, 1)
-        cart_item.save()
+        CartItem.objects.filter(sku=sku)[0].delete()
 
 
 class Order(models.Model):
+    """Describes order from Buyer"""
+
     STATUS = [
         ('new', 'new'),
         ('in_progress', 'in progress'),
         ('done', 'done')
-        ]
+    ]
     status = models.CharField(max_length=32, choices=STATUS, default='new')
     user = models.ForeignKey(Buyer, on_delete=models.CASCADE)
     city = models.CharField(max_length=50, null=True)
@@ -109,10 +117,7 @@ class Order(models.Model):
 
 
 class CartItem(models.Model):
-    count = models.IntegerField()
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
-    pack = models.ForeignKey(Pack, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f'{self.count} x {self.pack}'
+    """Used for many to many relationship"""
+    
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    sku = models.ForeignKey(StockKeepingUnit, on_delete=models.CASCADE)

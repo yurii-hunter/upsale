@@ -8,8 +8,8 @@ from telegram.ext import Updater
 from telegram.ext import CommandHandler, Filters, MessageHandler, CallbackQueryHandler
 from upsale.settings import BOTS
 from upsale.apps.bot.client.handlers import start_command, products, expand_product, \
-    collapse_product, prices, add_pack_to_cart, show_cart, increase_count, decrease_count, \
-    remove_pack, clean_cart, confirm_order, save_contact, save_address
+    collapse_product, prices, add_sku_to_cart, show_cart, increase_count, decrease_count, \
+    remove_sku, clean_cart, confirm_order, save_contact, save_address
 from upsale.apps.bot.client.constant import GO_BUTTON, CART_BUTTON, EXIT_BUTTON, \
     PRODUCTS_BUTTON, CONFIRM_BUTTON
 
@@ -35,10 +35,10 @@ class Command(BaseCommand):
         dispatcher.add_handler(CallbackQueryHandler(expand_product, pattern='.*description.*'))
         dispatcher.add_handler(CallbackQueryHandler(collapse_product, pattern='.*product.*'))
         dispatcher.add_handler(CallbackQueryHandler(prices, pattern='.*show_prices.*'))
-        dispatcher.add_handler(CallbackQueryHandler(add_pack_to_cart, pattern='.*add_to_cart.*'))
+        dispatcher.add_handler(CallbackQueryHandler(add_sku_to_cart, pattern='.*add_to_cart.*'))
         dispatcher.add_handler(CallbackQueryHandler(increase_count, pattern='.*plus_one.*'))
         dispatcher.add_handler(CallbackQueryHandler(decrease_count, pattern='.*minus_one.*'))
-        dispatcher.add_handler(CallbackQueryHandler(remove_pack, pattern='.*remove_one.*'))
+        dispatcher.add_handler(CallbackQueryHandler(remove_sku, pattern='.*remove_one.*'))
         dispatcher.add_handler(CallbackQueryHandler(clean_cart, pattern='clean_cart'))
 
         updater.start_polling()

@@ -3,8 +3,9 @@ Build messages
 """
 
 from typing import List
+import itertools
 from telegram import ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton, KeyboardButton
-from upsale.apps.core.models import Product, Cart, CartItem
+from upsale.apps.core.models import Product, Cart, StockKeepingUnit
 from upsale.apps.bot.client.constant import ID, ACTION
 from upsale.apps.bot.client.constant import GO_BUTTON, CART_BUTTON, EXIT_BUTTON, \
     PRODUCTS_BUTTON, CONFIRM_BUTTON, EMPTY_CART_BUTTON
@@ -91,28 +92,29 @@ def product_description_view(product: Product) -> dict:
 
 def product_price_view(product: Product, cart: Cart) -> dict:
     action_buttons = [get_back_button(product.id)]
-    for pack in product.pack_set.all():
-        if cart.contains(pack):
+    for sku in product.stockkeepingunit_set.all():
+        if cart.contains(sku):
             price_button = InlineKeyboardButton(
-                text=f'{pack.size}{pack.unit} - {pack.price} грн - В корзине', callback_data='empty')
+                text=f'{sku.pack.size}{sku.pack.unit} - {sku.price} грн - В корзине', callback_data='empty')
         else:
-            callback = str({ID: pack.id, ACTION: 'add_to_cart'})
-            price_button = InlineKeyboardButton(text=f'{pack.size}{pack.unit} - {pack.price} грн', callback_data=callback)
+            callback = str({ID: sku.id, ACTION: 'add_to_cart'})
+            price_button = InlineKeyboardButton(text=f'{sku.pack.size}{sku.pack.unit} - {sku.price} грн', callback_data=callback)
         action_buttons.append(price_button)
     action_markup = InlineKeyboardMarkup.from_column(action_buttons)
     return {'caption': product.short_caption(), 'reply_markup': action_markup}
 
 
-def cart_item_view(items: List[CartItem]):
+def cart_item_view(product, sku_set):
     buttons = []
-    for i in items:
-        plus = get_plus_button(i.pack.id)
-        minus = get_minus_button(i.pack.id)
-        remove = get_remove_button(i.pack.id)
-        count = InlineKeyboardButton(f'{i.count}/{i.pack.size}{i.pack.unit}', callback_data='empty')
+    items = sorted(sku_set, key=lambda x: x.id)
+    groups = itertools.groupby(items, lambda x: x)
+    for sku, group in groups:
+        plus = get_plus_button(sku.id)
+        minus = get_minus_button(sku.id)
+        remove = get_remove_button(sku.id)
+        count = InlineKeyboardButton(f'{len(list(group))}/{sku.pack.size}{sku.pack.unit}', callback_data='empty')
         buttons.append([plus, count, minus, remove])
     reply_markup = InlineKeyboardMarkup(buttons, one_time_keyboard=False, resize_keyboard=True)
-    product = items[0].pack.product
     return {'caption': product.short_caption(), 'photo': product.image, 'reply_markup': reply_markup}
 
 
