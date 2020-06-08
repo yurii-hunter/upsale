@@ -107,14 +107,19 @@ class Order(models.Model):
         ('done', 'done')
     ]
     status = models.CharField(max_length=32, choices=STATUS, default='new')
-    user = models.ForeignKey(Buyer, on_delete=models.CASCADE)
+    buyer = models.ForeignKey(Buyer, on_delete=models.CASCADE)
     city = models.CharField(max_length=50, null=True)
     branch_number = models.IntegerField(null=True)
     created = models.DateField(auto_now_add=True)
+    items = models.ManyToManyField(StockKeepingUnit, through='OrderItem')
 
     def __str__(self):
-        return f'[{self.status}] {self.user.full_name} - {self.created}'
+        return f'[{self.status}] {self.buyer.full_name} - {self.created}'
 
+class OrderItem(models.Model):
+    """Used for many to many relationship"""
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    sku = models.ForeignKey(StockKeepingUnit, on_delete=models.CASCADE)
 
 class CartItem(models.Model):
     """Used for many to many relationship"""

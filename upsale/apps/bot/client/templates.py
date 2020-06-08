@@ -138,12 +138,12 @@ def get_contact_view():
 
 def get_city_view():
     """Get delivery city"""
-    return {'text': "Напишите нам город доставки"}
+    return {'text': "Укажите город доставки"}
 
 def get_branch_number_view():
     """Get delivery branch number"""
-    return {'text': "Напишите нам номер отделения"}
+    return {'text': "Укажите номер отделения Новой Почты"}
 
 def get_order_is_confirmed():
     """Confirm order"""
-    return {'text': "Спасибо за заказ"}
+    return {'text': "Заказ успешно оформлен. Мы свяжемся с вами если нужно будет уточнить детали"}

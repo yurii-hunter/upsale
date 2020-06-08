@@ -4,6 +4,7 @@ Handlers for all commands for client part of a telegram bot
 
 from typing import List
 import itertools
+from django.db.models import Q
 from telegram import Update
 from telegram.ext import CallbackContext
 from upsale.apps.core import models
@@ -29,6 +30,15 @@ def start_command(update: Update, context: CallbackContext) -> None:
     models.Cart.objects.get_or_create(
         buyer=buyer
     )
+    if not buyer.phone_number:
+        helpers.respond(context.bot, update.effective_chat.id, views.get_contact_view())
+    else:
+        helpers.respond(context.bot, update.effective_chat.id, views.welcome_message())
+
+def save_contact(update: Update, context: CallbackContext):
+    buyer = models.Buyer.objects.get(pk=update.effective_user.id)
+    buyer.phone_number = update.message.contact.phone_number
+    buyer.save()
     helpers.respond(context.bot, update.effective_chat.id, views.welcome_message())
 
 def products(update: Update, context: CallbackContext) -> None:
@@ -129,42 +139,29 @@ def clean_cart(update: Update, context: CallbackContext):
 def confirm_order(update: Update, context: CallbackContext):
     """Confirm order"""
     user = models.Buyer.objects.get(pk=update.effective_user.id)
-    cart = models.Cart.objects.get(user=update.effective_user.id)
-    (order, order_just_created) = models.Order.objects.get_or_create(
-        user=user
-    )
-    if order_just_created:
-        for item in cart.cartitem_set.all():
-            item.order = order
-            item.cart = None
-            item.save()
-    if not user.phone_number:
-        helpers.respond(context.bot, update.effective_chat.id, views.get_contact_view())
-        return
-    if not order.city:
-        helpers.respond(context.bot, update.effective_chat.id, views.get_city_view())
-        return
-    if not order.branch_number:
-        helpers.respond(context.bot, update.effective_chat.id, views.get_branch_number_view())
-        return
-    helpers.respond(context.bot, update.effective_chat.id, views.get_order_is_confirmed())
+    cart = models.Cart.objects.get(buyer=update.effective_user.id)
+    order = models.Order.objects.create(buyer=user)
+    for sku in cart.items.all():
+        models.OrderItem(order=order, sku=sku).save()
+    cart.items.clear()
+    helpers.respond(context.bot, update.effective_chat.id, views.get_city_view())
 
-def save_contact(update: Update, _: CallbackContext):
-    user = models.Buyer.objects.get(pk=update.effective_user.id)
-    user.phone_number = update.message.contact.phone_number
-    user.save()
 
 def save_address(update: Update, context: CallbackContext):
-    order = models.Order.objects.filter(user=update.effective_user.id, status='new')[0]
-    if not order:
+    orders = models.Order.objects.filter(
+        Q(buyer=update.effective_user.id),
+        Q(city__isnull=True) | Q(branch_number__isnull=True))
+    if not orders:
         return
+    order = orders[0]
     if not order.city:
         order.city = update.message.text
         order.save()
-        confirm_order(update, context)
+        helpers.respond(context.bot, update.effective_chat.id, views.get_branch_number_view())
         return
     if not order.branch_number:
         order.branch_number = int(update.message.text)
         order.save()
-        confirm_order(update, context)
-        return
+        helpers.respond(context.bot, update.effective_chat.id, views.get_order_is_confirmed())
+        helpers.respond(context.bot, update.effective_chat.id, views.welcome_message())
+
