@@ -9,9 +9,6 @@ jobs:
       - cherry
     env:
       BOT_API_TOKEN: ${{ secrets.BOT_API_TOKEN_CHERRY }}
-      ADMIN_NAME: ${{ secrets.CHERRY_ADMIN_NAME }}
-      ADMIN_EMAIL: ${{ secrets.CHERRY_ADMIN_EMAIL }}
-      ADMIN_PASS: ${{ secrets.CHERRY_ADMIN_PASS }}
 
     steps:
     - uses: actions/checkout@v2
